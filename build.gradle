@@ -1,0 +1,45 @@
+plugins {
+    id "io.qameta.allure" version "2.5"
+}
+
+group 'allure-cucumber-jvm-demo'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'info.cukes', name: 'cucumber-java', version: '1.2.5'
+    testCompile group: 'info.cukes', name: 'cucumber-testng', version: '1.2.5'
+    testCompile group: 'info.cukes', name: 'cucumber-picocontainer', version: '1.2.5'
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    testCompile group: 'io.qameta.allure', name: 'allure-cucumber-jvm', version: '2.6.0'
+}
+
+allure {
+    version = '2.6.0'
+}
+
+task executeFeatures(type: Test) {
+    doFirst {
+        useTestNG()
+        options {
+            useDefaultListeners = false
+            jvmArgs = ['-Dcucumber.options= ' +
+                               '--glue allure.cucumber.jvm.demo ' +
+                               '--plugin pretty ' +
+                               '--plugin io.qameta.allure.cucumberjvm.AllureCucumberJvm']
+        }
+        testLogging.showStandardStreams = true
+        scanForTestClasses = false
+        ignoreFailures = true
+        reports.html.enabled = false
+    }
+    finalizedBy 'allureReport'
+}
